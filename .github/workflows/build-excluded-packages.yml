@@ -37,7 +37,7 @@ jobs:
         uses: SebRollen/toml-action@v1.0.0
         with:
           file: 'Cargo.toml'
-          field: exclude
+          field: 'workspace.exclude'
 
       - name: Print
         run: echo ${{ steps.read_excluded.VALUE }} && echo ${{ steps.read_excluded.ouptuts.VALUE }} && echo ${{ steps.read_excluded.value }} && echo ${{ steps.read_excluded.outputs.value }}
