@@ -38,7 +38,7 @@ jobs:
 
       - name: Build excluded packages
         run: |
-          for i in "${${{ steps.read_excluded.outputs.value }}[@]}"
+          for i in "${{ steps.read_excluded.outputs.value }}"
           do
              echo "$i"
           done
