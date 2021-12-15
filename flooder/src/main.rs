@@ -28,7 +28,7 @@ fn main() -> Result<(), anyhow::Error> {
     let config: Config = Config::parse();
     info!("Starting benchmark with config {:#?}", &config);
 
-    let account = mtch config.phrase {
+    let account = match config.phrase {
         Some(phrase) => {
             sr25519::Pair::from_phrase(&config::read_phrase(phrase), None)
                 .unwrap()
