@@ -41,6 +41,7 @@ jobs:
           packages=($(echo ${{ steps.read_excluded.outputs.value }} | sed 's/[][,]/ /g' | tr ' ' "\n"))
           for p in ${packages[@]}
           do
+            echo "Compiling package $p..."
             pushd "$p"
             cargo clippy --all-targets --all-features
             popd
