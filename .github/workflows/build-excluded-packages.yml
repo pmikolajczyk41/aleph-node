@@ -39,7 +39,9 @@ jobs:
       - name: Build excluded packages
         run: |
           packages=($(echo ${{ steps.read_excluded.outputs.value }} | sed 's/[][,]/ /g' | tr ' ' "\n"))
-          for i in ${packages[@]}
+          for p in ${packages[@]}
           do
-             echo "$i"
+            pushd "$p"
+            cargo clippy --all-targets --all-features
+            popd
           done
