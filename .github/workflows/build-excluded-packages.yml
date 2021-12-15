@@ -7,7 +7,7 @@ jobs:
     name: Build excluded packages
     runs-on: ubuntu-latest
     env:
-      RUST_TOOLCHAIN_VERSION: nightly-2021-07-21
+      RUST_TOOLCHAIN_VERSION: nightly-2021-10-24
       CARGO_INCREMENTAL: 0
     steps:
 #      - name: Cancel Previous Runs
