@@ -18,6 +18,14 @@ jobs:
     uses: pmikolajczyk41/aleph-node/.github/workflows/build-node-and-runtime.yml@AZ-408-update-check
 
 
+  build-old-node:
+    name: Build node and runtime artifacts (main version)
+    uses: pmikolajczyk41/aleph-node/.github/workflows/build-node-and-runtime.yml@AZ-408-update-check
+    with:
+      ref: 'main'
+      artifact-prefix: 'old-'
+
+
   build-docker:
     needs: [build-new-node]
     name: Build docker image of the node
