@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-new-node:
-    name: Build node and runtime artifacts (new version)
+    name: Build node and runtime artifacts (PR version)
     uses: pmikolajczyk41/aleph-node/.github/workflows/build-node-and-runtime.yml@AZ-408-update-check
 
 
@@ -36,10 +36,6 @@ jobs:
         with:
           name: aleph-node
           path: target/release/
-
-      - name: Check artifact
-        run: |
-          ls -R target/release/
 
       - name: Build docker image
         id: build-image
@@ -139,7 +135,7 @@ jobs:
 
 
   run-e2e-tests:
-    needs: [build-new-node, build-test-client]
+    needs: [build-new-node, build-docker, build-test-client]
     name: Run e2e tests suite
     runs-on: ubuntu-latest
     steps:
