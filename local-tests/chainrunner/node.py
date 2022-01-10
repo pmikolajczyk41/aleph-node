@@ -24,13 +24,18 @@ class Node:
         self.process = None
         self.flags = {}
         self.running = False
+        self.log_level = {}
 
     def _stdargs(self):
         return ['--base-path', self.path, '--chain', self.chainspec]
 
+    def _log_levels(self):
+        pairs = [(f'-l{k}', v) for (k, v) in self.log_level.items()]
+        return list(sum(pairs, ()))
+
     def start(self, name):
         """Start the node. `name` is used to name of the logfile and for --name flag."""
-        cmd = [self.binary, '--name', name] + self._stdargs() + flags_from_dict(self.flags)
+        cmd = [self.binary, '--name', name] + self._stdargs() + flags_from_dict(self.flags) + self._log_levels()
         self.logfile = op.join(self.logdir, name + '.log')
         with open(self.logfile, 'w', encoding='utf-8') as logfile:
             # pylint: disable=consider-using-with
@@ -64,6 +69,15 @@ class Node:
             a, b = results[-1]
             return int(a), int(b)
         return -1, -1
+
+    def check_hash_of(self, number):
+        """Find in the logs the hash for block with number `number`."""
+        pattern = rf'Finalizing block {number} (.+)'
+        print(pattern)
+        results = self.greplog(pattern)
+        if results:
+            return results[-1]
+        return ''
 
     def state(self, block=None):
         """Return a JSON representation of the chain state after the given block.
