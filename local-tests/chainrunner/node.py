@@ -30,8 +30,7 @@ class Node:
         return ['--base-path', self.path, '--chain', self.chainspec]
 
     def _log_levels(self):
-        pairs = [(f'-l{k}', v) for (k, v) in self.log_level.items()]
-        return list(sum(pairs, ()))
+        return [f'-l{k}={v}' for (k, v) in self.log_level.items()]
 
     def start(self, name):
         """Start the node. `name` is used to name of the logfile and for --name flag."""
@@ -72,9 +71,7 @@ class Node:
 
     def check_hash_of(self, number):
         """Find in the logs the hash for block with number `number`."""
-        pattern = rf'Finalizing block {number} (.+)'
-        print(pattern)
-        results = self.greplog(pattern)
+        results = self.greplog(rf'Finalizing block {number} (.+)')
         if results:
             return results[-1]
         return ''

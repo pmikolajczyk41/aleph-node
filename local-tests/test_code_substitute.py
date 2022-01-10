@@ -1,4 +1,5 @@
 #!/bin/env python
+import json
 import os
 import os.path
 
@@ -73,31 +74,58 @@ def run_corrupted_binary():
 
 
 def panic(chain, message):
-    print(message)
+    print(f'💀 {message}')
     chain.stop()
     chain.purge()
     sys.exit(1)
 
 
 def wait_for_stalling(chain):
-    sleep(30)
-    finalized_30 = check_highest(chain)
-    print(f'There are {finalized_30} finalized blocks now. Waiting a little bit more.')
+    sleep(40)
+    finalized_40 = check_highest(chain)
+    print(f'There are {finalized_40} finalized blocks now. Waiting a little bit more.')
 
     sleep(10)
-    finalized_40 = check_highest(chain)
-    if finalized_40 != finalized_30:
+    finalized_50 = check_highest(chain)
+    if finalized_50 != finalized_40:
         panic(chain, 'Chain is not running long enough to witness breakage.')
-    print(f'There are still {finalized_40} finalized  blocks. Finalization stalled.')
+    print(f'There are still {finalized_50} finalized  blocks. Finalization stalled.')
 
-    hash = chain[0].check_hash_of(finalized_40)
+    hash = chain[0].check_hash_of(finalized_50)
     if not hash:
         panic(chain, 'First node does not know hash of the highest finalized.')
-    return hash
+    return hash, finalized_50
 
 
-def update_chainspec(chain, hash):
-    print(hash)
+def update_chainspec(hash):
+    print(f'Setting `code_substitute` with hash {hash}.')
+    with open('chainspec.json', mode='r', encoding='utf-8') as chainspec_in:
+        chainspec = json.loads(chainspec_in.read())
+    with open(FIXING_RUNTIME, mode='rb') as fix:
+        fix = fix.read().hex()
+
+    chainspec['codeSubstitutes'] = {hash: fix}
+    with open('chainspec-new.json', mode='w', encoding='utf-8') as chainspec_out:
+        chainspec_out.write(json.dumps(chainspec))
+
+
+def restart_nodes(chain):
+    chain.stop()
+    chain.set_chainspec('chainspec-new.json')
+    chain.start('fixed')
+
+    sleep(10)
+
+    print('Chain restarted with a new chainspec')
+    query_runtime_version(chain)
+
+
+def wait_for_continuation(chain, stalled_at):
+    sleep(10)
+    finalized = check_highest(chain)
+    if finalized == stalled_at:
+        panic(chain, 'There are still troubles with finalization.')
+    return finalized
 
 
 def test_code_substitute():
@@ -105,9 +133,12 @@ def test_code_substitute():
 
     chain = run_corrupted_binary()
     query_runtime_version(chain)
-    hash = wait_for_stalling(chain)
+    hash, finalized = wait_for_stalling(chain)
 
-    update_chainspec(chain, hash)
+    update_chainspec(hash)
+    restart_nodes(chain)
+
+    wait_for_continuation(chain, finalized)
 
 
 if __name__ == '__main__':
