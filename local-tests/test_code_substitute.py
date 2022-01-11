@@ -110,7 +110,6 @@ def update_chainspec(hash):
         chainspec_out.write(json.dumps(chainspec))
 
 
-
 def restart_nodes(chain):
     chain.stop()
     chain.set_chainspec('chainspec-new.json')
