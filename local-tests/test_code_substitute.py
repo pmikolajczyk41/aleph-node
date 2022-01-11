@@ -67,6 +67,7 @@ def run_corrupted_binary():
                     execution='Native')
 
     chain.set_log_level('afa', 'debug')
+    chain.set_log_level('wasm_substitutes', 'debug')
 
     chain.start('corrupted')
     sleep(5)
