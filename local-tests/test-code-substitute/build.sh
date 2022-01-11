@@ -14,14 +14,13 @@ cp target/release/aleph-node $TEST_DIR/build/
 echo "Build fixing runtime"
 
 cp $TEST_DIR/libs/pallet-lib.rs pallet/src/lib.rs
-cp $TEST_DIR/libs/runtime-lib-v7.rs bin/runtime/src/lib.rs
 
 cargo build --release -p aleph-runtime
 cp target/release/wbuild/aleph-runtime/aleph_runtime.compact.wasm $TEST_DIR/build/fixing_runtime.wasm
 
 echo "Build new runtime"
 
-cp $TEST_DIR/libs/runtime-lib-v8.rs bin/runtime/src/lib.rs
+cp $TEST_DIR/libs/runtime-lib-v7.rs bin/runtime/src/lib.rs
 
 cargo build --release -p aleph-runtime
 cp target/release/wbuild/aleph-runtime/aleph_runtime.compact.wasm $TEST_DIR/build/new_runtime.wasm
